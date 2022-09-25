@@ -13,4 +13,9 @@
     <h1>NOTHING FOUND</h1>
     @endunless
 </div>
+
+<div class="mt-6 p-4">
+    {{$listings->links()}}
+
+</div>
 @endsection

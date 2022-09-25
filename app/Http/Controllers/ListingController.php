@@ -13,7 +13,7 @@ class ListingController extends Controller
 
 
         return view('listings.index', [
-            'listings' => Listing::latest()->filter(request(['tags', 'search']))->get()
+            'listings' => Listing::latest()->filter(request(['tags', 'search']))->paginate(2)
 
         ]);
     }
@@ -44,9 +44,46 @@ class ListingController extends Controller
 
 
         ]);
+        if ($request->hasFile('logo')) {
+            $formFIelds['logo'] = $request->file('logo')->store('logos', 'public');
+        }
 
         Listing::create($formFIelds);
 
         return redirect("/")->with('message', 'Job Listing added successfuly!');
+    }
+
+    public function edit(Listing $listing)
+    {
+        return view('listings.edit', ['listing' => $listing]);
+    }
+
+    public function update(Request $request, Listing $listing)
+    {
+        $formFIelds = $request->validate([
+            'title' => 'required',
+            'company' => ['required'],
+            'location' => 'required',
+            'website' => 'required',
+            'email' => ['required', 'email'],
+            'tags' => 'required',
+            'description' => 'required'
+
+
+
+        ]);
+        if ($request->hasFile('logo')) {
+            $formFIelds['logo'] = $request->file('logo')->store('logos', 'public');
+        }
+
+        $listing->update($formFIelds);
+
+        return back()->with('message', 'Job Listing updated successfuly!');
+    }
+
+    public function destroy(Listing $listing)
+    {
+        $listing->delete();
+        return redirect("/")->with('message', 'Job Listing deleted successfuly!');
     }
 }
